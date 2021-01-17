@@ -3,3 +3,6 @@
 .terraform.lock*
 .terraform/
 *.tfvars
+
+.gitsecret/keys/random_seed
+!*.secret
