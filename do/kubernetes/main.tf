@@ -1,5 +1,20 @@
+terraform {
+    required_version = "> 0.12"
+    backend "s3" {
+        skip_credentials_validation = true
+        skip_metadata_api_check     = true
+        endpoint                    = "https://fra1.digitaloceanspaces.com"
+        region                      = "us-east-1" // needed
+        bucket                      = "test-deploy"
+        key                         = "infrastructure/terraform.tfstate"
+    }
+}
+
 provider "digitalocean" {
     token = var.api_key
+
+    spaces_access_id = var.tf_space_id
+    spaces_secret_key = var.tf_space_secret_key
 }
 
 resource "digitalocean_kubernetes_cluster" "sandbox" {
@@ -10,7 +25,8 @@ resource "digitalocean_kubernetes_cluster" "sandbox" {
 
   node_pool {
     name       = "worker-pool"
-    size       = "s-2vcpu-2gb"
+    # we can setup only minimum with 2gb nodes
+    size       = element(data.digitalocean_sizes.main.sizes, 1).slug
     node_count = 2
   }
 }
