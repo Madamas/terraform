@@ -1,16 +1,21 @@
 variable "api_key" {
-    type = string
+  type = string
 }
 
 variable "tf_space_id" {
-    type = string
+  type = string
 }
 
 variable "tf_space_secret_key" {
-    type = string
+  type = string
 }
 
 variable "region" {
   type    = string
   default = "fra1"
+}
+
+variable "domain" {
+  type    = string
+  default = "madamas.tk"
 }
