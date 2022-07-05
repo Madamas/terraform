@@ -1,6 +1,6 @@
-# data "digitalocean_kubernetes_cluster" "cluster" {
-#   name = "sandbox"
-# }
+data "digitalocean_kubernetes_cluster" "cluster" {
+  name = "sandbox"
+}
 
 provider "digitalocean" {
   token = var.api_key
