@@ -10,9 +10,13 @@ variable "tf_space_secret_key" {
   type = string
 }
 
+variable "bucket" {
+  type = string
+}
+
 variable "region" {
   type    = string
-  default = "fra1"
+  default = "ams3"
 }
 
 variable "domain" {
