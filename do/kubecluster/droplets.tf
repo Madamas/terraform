@@ -11,7 +11,7 @@ data "digitalocean_sizes" "main" {
 
   filter {
     key    = "regions"
-    values = ["ams3"]
+    values = [var.region]
   }
 
   sort {

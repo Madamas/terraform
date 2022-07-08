@@ -6,5 +6,4 @@
 
 .gitsecret/keys/random_seed
 !*.secret
-do/kubernetes/backend_config.hcl
-do-new/kubernetes/backend_config.hcl
+do/backend_config.hcl

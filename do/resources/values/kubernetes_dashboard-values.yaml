@@ -1,3 +1,4 @@
+# https://github.com/kubernetes/dashboard/blob/a45339437acbd61bf960b99af3b43660f030306e/aio/deploy/helm-chart/kubernetes-dashboard/templates/deployment.yaml
 # Copyright 2020 The Kubernetes Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,7 +42,8 @@ labels: {}
 
 ## Additional container arguments
 ##
-# extraArgs:
+extraArgs:
+  - --api-log-level="DEBUG"
 #   - --enable-skip-login
 #   - --enable-insecure-login
 #   - --system-banner="Welcome to Kubernetes"
@@ -99,7 +101,7 @@ containerSecurityContext:
 ## @param podLabels Extra labels for OAuth2 Proxy pods
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 ##
-podLabels: {}
+podLabels: { name: "kubernetes-dashboard" }
 ## @param podAnnotations Annotations for OAuth2 Proxy pods
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
@@ -130,13 +132,13 @@ resources:
     cpu: 100m
     memory: 200Mi
   limits:
-    cpu: 2
+    cpu: 200m
     memory: 200Mi
 
 ## Serve application over HTTP without TLS
 ##
 ## Note: If set to true, you may want to add --enable-insecure-login to extraArgs
-protocolHttp: false
+protocolHttp: true
 
 service:
   type: ClusterIP
@@ -174,9 +176,9 @@ ingress:
   #   key: value
 
   ## Kubernetes Dashboard Ingress annotations
-  # annotations:
-  #   kubernetes.io/ingress.class: nginx
-  #   kubernetes.io/tls-acme: 'true'
+  annotations:
+    # kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
 
   ## If you plan to use TLS backend with enableInsecureLogin set to false
   ## (default), you need to uncomment the below.
@@ -186,12 +188,12 @@ ingress:
   #   nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
 
   ## Kubernetes Dashboard Ingress Class
-  # className: "example-lb"
+  className: "sandbox-ingress"
 
   ## Kubernetes Dashboard Ingress paths
   ## Both `/` and `/*` are required to work on gce ingress.
   paths:
-    - /
+    - /dashboard*
   #  - /*
 
   ## Custom Kubernetes Dashboard Ingress paths. Will override default paths.
@@ -285,11 +287,11 @@ metrics-server:
 
 rbac:
   # Specifies whether namespaced RBAC resources (Role, Rolebinding) should be created
-  create: true
+  create: false
 
   # Specifies whether cluster-wide RBAC resources (ClusterRole, ClusterRolebinding) to access metrics should be created
   # Independent from rbac.create parameter.
-  clusterRoleMetrics: true
+  clusterRoleMetrics: false
 
   # Start in ReadOnly mode.
   # Specifies whether cluster-wide RBAC resources (ClusterRole, ClusterRolebinding) with read only permissions to all resources listed inside the cluster should be created
