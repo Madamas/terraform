@@ -18,3 +18,21 @@
 #     }
 #   }
 # }
+
+resource "kubernetes_service_v1" "hello_world" {
+  metadata {
+    name = "hello-world"
+  }
+
+  spec {
+    selector         = kubernetes_deployment_v1.hello_world.metadata.0.labels
+    session_affinity = "ClientIP"
+
+    port {
+      port        = 80
+      target_port = 8080
+    }
+
+    type = "ClusterIP"
+  }
+}

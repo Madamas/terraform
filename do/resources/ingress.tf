@@ -14,13 +14,33 @@ resource "helm_release" "ingress-nginx" {
     value = true
   }
 
+  # set {
+  #   name  = "service.annotations.kubernetes\\.digitalocean\\.com/load-balancer-id"
+  #   value = digitalocean_loadbalancer.ingress-load-balancer.id
+  # }
+
   set {
-    name  = "service.annotations.kubernetes\\.digitalocean\\.com/load-balancer-id"
-    value = digitalocean_loadbalancer.ingress-load-balancer.id
+    name  = "service.annotations.service\\.beta\\.kubernetes\\.io/do-loadbalancer-vpc-id"
+    value = data.digitalocean_vpc.default.id
+  }
+
+  set {
+    name  = "service.annotations.service\\.beta\\.kubernetes\\.io/do-loadbalancer-certificate-id"
+    value = digitalocean_certificate.madamas-cyou-main.uuid
+  }
+
+  set {
+    name  = "service.annotations.service\\.beta\\.kubernetes\\.io/do-loadbalancer-protocol"
+    value = "https"
+  }
+
+  set {
+    name  = "service.annotations.service\\.beta\\.kubernetes\\.io/do-loadbalancer-name"
+    value = var.lb_name
   }
 
   depends_on = [
-    digitalocean_loadbalancer.ingress-load-balancer,
+    digitalocean_certificate.madamas-cyou-main,
   ]
 }
 
@@ -39,7 +59,7 @@ resource "kubernetes_ingress_v1" "sandbox-ingress" {
     helm_release.ingress-nginx,
   ]
 
-  wait_for_load_balancer = true
+  # wait_for_load_balancer = true
 
   metadata {
     name = "sandbox-ingress"
@@ -55,6 +75,8 @@ resource "kubernetes_ingress_v1" "sandbox-ingress" {
     ingress_class_name = kubernetes_ingress_class_v1.sandbox-ingress.metadata.0.name
 
     rule {
+      host = var.domain_name
+
       http {
         path {
           path      = "/hello*"
@@ -79,7 +101,7 @@ resource "kubernetes_ingress_v1" "sandbox-ingress-dashboard" {
     helm_release.ingress-nginx,
   ]
 
-  wait_for_load_balancer = true
+  # wait_for_load_balancer = true
 
   metadata {
     name      = "sandbox-ingress"
@@ -98,6 +120,8 @@ resource "kubernetes_ingress_v1" "sandbox-ingress-dashboard" {
     ingress_class_name = kubernetes_ingress_class_v1.sandbox-ingress.metadata.0.name
 
     rule {
+      host = var.domain_name
+
       http {
         path {
           path = "/dashboard(/|$)(.*)"

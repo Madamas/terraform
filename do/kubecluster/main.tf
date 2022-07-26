@@ -9,13 +9,18 @@ resource "digitalocean_kubernetes_cluster" "sandbox" {
   name   = "sandbox"
   region = var.region
   # Grab the latest version slug from `doctl kubernetes options versions`
-  version = "1.22.11-do.0"
+  version = "1.23.9-do.0"
 
+  vpc_uuid = data.digitalocean_vpc.default.id
   node_pool {
     name       = "worker-pool"
     size       = element(data.digitalocean_sizes.main.sizes, 1).slug
     node_count = 1
   }
+}
+
+data "digitalocean_vpc" "default" {
+  name = "default"
 }
 
 resource "digitalocean_kubernetes_node_pool" "autoscale-pool-01" {

@@ -1,9 +1,11 @@
 variable "api_key" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "secret_key" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "tf_space_id" {
@@ -11,7 +13,8 @@ variable "tf_space_id" {
 }
 
 variable "tf_space_secret_key" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "bucket" {
@@ -23,7 +26,20 @@ variable "region" {
   default = "ams3"
 }
 
-variable "domain" {
+variable "atlas_public_key" {
+  type = string
+}
+
+variable "atlas_private_key" {
+  type      = string
+  sensitive = true
+}
+
+variable "domain_name" {
+  type = string
+}
+
+variable "lb_name" {
   type    = string
-  default = "madamas.tk"
+  default = "sandbox-lb"
 }

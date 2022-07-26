@@ -39,3 +39,7 @@ variable "atlas_private_key" {
   type      = string
   sensitive = true
 }
+
+variable "domain_name" {
+  type = string
+}
