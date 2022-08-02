@@ -10,7 +10,7 @@ resource "helm_release" "kubernetes-dashboard" {
   ]
 
   depends_on = [
-    kubernetes_namespace_v1.kubernetes_dashboard
+    kubernetes_namespace_v1.kubernetes_dashboard,
   ]
 }
 

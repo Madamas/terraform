@@ -17,6 +17,10 @@ provider "helm" {
       data.digitalocean_kubernetes_cluster.sandbox.kube_config[0].cluster_ca_certificate
     )
   }
+
+  experiments {
+    manifest = true
+  }
 }
 
 provider "kubernetes" {

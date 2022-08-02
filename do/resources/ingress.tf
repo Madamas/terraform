@@ -3,21 +3,9 @@ resource "helm_release" "ingress-nginx" {
   namespace  = "default"
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "nginx-ingress-controller"
+  version    = "9.2.19"
 
-  set {
-    name  = "service.type"
-    value = "LoadBalancer"
-  }
-
-  set {
-    name  = "controller.nginxDebug"
-    value = true
-  }
-
-  # set {
-  #   name  = "service.annotations.kubernetes\\.digitalocean\\.com/load-balancer-id"
-  #   value = digitalocean_loadbalancer.ingress-load-balancer.id
-  # }
+  values = [file("${path.cwd}/values/ingress_nginx-values.yaml")]
 
   set {
     name  = "service.annotations.service\\.beta\\.kubernetes\\.io/do-loadbalancer-vpc-id"
@@ -25,13 +13,13 @@ resource "helm_release" "ingress-nginx" {
   }
 
   set {
-    name  = "service.annotations.service\\.beta\\.kubernetes\\.io/do-loadbalancer-certificate-id"
-    value = digitalocean_certificate.madamas-cyou-main.uuid
+    name  = "service.annotations.service\\.beta\\.kubernetes\\.io/do-loadbalancer-hostname"
+    value = var.domain_name
   }
 
   set {
-    name  = "service.annotations.service\\.beta\\.kubernetes\\.io/do-loadbalancer-protocol"
-    value = "https"
+    name  = "service.annotations.service\\.beta\\.kubernetes\\.io/do-loadbalancer-certificate-id"
+    value = digitalocean_certificate.madamas-cyou-main.uuid
   }
 
   set {
@@ -41,6 +29,7 @@ resource "helm_release" "ingress-nginx" {
 
   depends_on = [
     digitalocean_certificate.madamas-cyou-main,
+    kubernetes_secret_v1.tls,
   ]
 }
 
@@ -73,6 +62,11 @@ resource "kubernetes_ingress_v1" "sandbox-ingress" {
 
   spec {
     ingress_class_name = kubernetes_ingress_class_v1.sandbox-ingress.metadata.0.name
+
+    # tls {
+    #   hosts       = [var.domain_name]
+    #   secret_name = "main-tls"
+    # }
 
     rule {
       host = var.domain_name
@@ -110,7 +104,7 @@ resource "kubernetes_ingress_v1" "sandbox-ingress-dashboard" {
     annotations = {
       "nginx.ingress.kubernetes.io/rewrite-target" = "/$2"
       "nginx.ingress.kubernetes.io/server-snippet" : <<EOF
-        rewrite ^(/dashboard)$ $1/ redirect;
+        rewrite ^(/dashboard)$ https://$server_name$1/ redirect;
       EOF
       # "nginx.ingress.kubernetes.io/use-regex" : true
     }
@@ -118,6 +112,11 @@ resource "kubernetes_ingress_v1" "sandbox-ingress-dashboard" {
 
   spec {
     ingress_class_name = kubernetes_ingress_class_v1.sandbox-ingress.metadata.0.name
+
+    # tls {
+    #   hosts       = [var.domain_name]
+    #   secret_name = "main-tls"
+    # }
 
     rule {
       host = var.domain_name

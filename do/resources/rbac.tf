@@ -39,23 +39,33 @@ resource "kubernetes_cluster_role_v1" "dashboard-user" {
     resources  = ["secrets"]
     verbs      = ["get", "list", "watch", "update"]
   }
+
+  depends_on = [
+    kubernetes_namespace_v1.kubernetes_dashboard,
+    helm_release.kubernetes-dashboard,
+  ]
 }
 
-resource "kubernetes_service_account_v1" "dashboard-user" {
-  metadata {
-    name      = "dashboard-user"
-    namespace = "kubernetes-dashboard"
-    annotations = {
-      "app.kubernetes.io/managed-by" : "Helm"
-      "meta.helm.sh/release-name" : "kubernetes-dashboard"
-      "meta.helm.sh/release-namespace" : "kubernetes-dashboard"
-    }
-    labels = {
-      "app.kubernetes.io/managed-by" : "Helm"
-      "meta.helm.sh/release-name" : "kubernetes-dashboard"
-      "meta.helm.sh/release-namespace" : "kubernetes-dashboard"
-    }
-  }
+# resource "kubernetes_service_account_v1" "dashboard-user" {
+#   metadata {
+#     name      = "dashboard-user"
+#     namespace = "kubernetes-dashboard"
+#     annotations = {
+#       "app.kubernetes.io/managed-by" : "Helm"
+#       "meta.helm.sh/release-name" : "kubernetes-dashboard"
+#       "meta.helm.sh/release-namespace" : "kubernetes-dashboard"
+#     }
+#     labels = {
+#       "app.kubernetes.io/managed-by" : "Helm"
+#       "meta.helm.sh/release-name" : "kubernetes-dashboard"
+#       "meta.helm.sh/release-namespace" : "kubernetes-dashboard"
+#     }
+#   }
 
-  automount_service_account_token = true
-}
+#   automount_service_account_token = true
+
+#   depends_on = [
+#     kubernetes_namespace_v1.kubernetes_dashboard,
+#     helm_release.kubernetes-dashboard
+#   ]
+# }
