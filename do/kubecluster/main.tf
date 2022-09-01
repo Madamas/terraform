@@ -14,8 +14,8 @@ resource "digitalocean_kubernetes_cluster" "sandbox" {
   vpc_uuid = data.digitalocean_vpc.default.id
   node_pool {
     name       = "worker-pool"
-    size       = element(data.digitalocean_sizes.main.sizes, 1).slug
-    node_count = 1
+    size       = "s-2vcpu-4gb"
+    node_count = 2
   }
 }
 
@@ -23,11 +23,11 @@ data "digitalocean_vpc" "default" {
   name = "default"
 }
 
-resource "digitalocean_kubernetes_node_pool" "autoscale-pool-01" {
-  cluster_id = digitalocean_kubernetes_cluster.sandbox.id
-  name       = "autoscale-pool-01"
-  size       = "s-1vcpu-2gb"
-  auto_scale = true
-  min_nodes  = 1
-  max_nodes  = 5
-}
+# resource "digitalocean_kubernetes_node_pool" "autoscale-pool-01" {
+#   cluster_id = digitalocean_kubernetes_cluster.sandbox.id
+#   name       = "autoscale-pool-01"
+#   size       = "s-1vcpu-2gb"
+#   auto_scale = true
+#   min_nodes  = 1
+#   max_nodes  = 5
+# }
